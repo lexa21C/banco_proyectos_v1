@@ -3,7 +3,7 @@ from rest_framework import generics
 from proyectos.models import Proyecto
 from proyectos.serializers.proyecto import *
 
-class ProyectoList(generics.ListAPIView):
+class BuscarProyectos(generics.ListAPIView):
     serializer_class = ProyectoSerializer
 
     def get_queryset(self):

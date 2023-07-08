@@ -37,6 +37,7 @@ class FichaIntegrantesViewSet(viewsets.ModelViewSet):
             ficha = get_object_or_404(Ficha, id=ficha_id)
 
             inscritos = Inscrito.objects.filter(ficha=ficha)
+            #serializar el perfil con un depth 2
             serializer = self.get_serializer(inscritos, many=True)
             return Response(serializer.data)
         except Http404:

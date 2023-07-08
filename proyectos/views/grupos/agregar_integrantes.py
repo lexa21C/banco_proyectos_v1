@@ -15,7 +15,7 @@ class AgregarInscritosViewSet(viewsets.ModelViewSet):
     queryset = Inscrito.objects.all()
     serializer_class = ListaInscritoSerializer
     # permission_classes = [permissions.IsAuthenticated]
-
+    
     def get_inscritos(self, request, *args, **kwargs):
         """
         Obtiene la lista de inscritos activos que no pertenecen a ningún grupo, están asociados
@@ -32,23 +32,20 @@ class AgregarInscritosViewSet(viewsets.ModelViewSet):
         Raises:
             Http404: Si no se encuentra el perfil correspondiente.
         """
-        try:
-            user_id = kwargs['id_user']
-            perfil_id = perfil_conectado(user_id)
-            inscritos = Inscrito.objects.select_related('rol').filter(
-                perfil_id=perfil_id,
-                estado='activo',
-                nombre_grupo__isnull=True,
-                rol__nombre='aprendiz'
-            )
-            fichas = inscritos.values('ficha').distinct()
-            inscritos_misma_ficha = Inscrito.objects.select_related('rol').filter(
-                ficha__in=fichas,
-                estado='activo',
-                nombre_grupo__isnull=True,
-                rol__nombre='aprendiz'
-            )
-            serializer = self.get_serializer(inscritos_misma_ficha, many=True)
-            return Response(serializer.data)
-        except Http404:
-            return Response("Perfil no encontrado.", status=status.HTTP_404_NOT_FOUND)
+        user_id = kwargs['id_user']
+        perfil_id = perfil_conectado(user_id)
+        inscritos = Inscrito.objects.filter(perfil_id=perfil_id, estado='activo', )
+        
+        # Obtener todas las fichas asociadas a los inscritos
+        fichas = inscritos.values_list('ficha', flat=True).distinct()
+
+        # Filtrar los inscritos que tienen alguna de las fichas asociadas
+        # Filtrar los inscritos que tienen alguna de las fichas asociadas y cumplen las condiciones adicionales
+        inscritos_misma_ficha = Inscrito.objects.filter(ficha__in=fichas, estado='activo', nombre_grupo__isnull=True )
+
+        print( inscritos_misma_ficha)
+        # Serializar los datos de los inscritos
+        serializer = self.get_serializer(inscritos_misma_ficha, many=True)
+
+        # Devolver la respuesta con los datos serializados
+        return Response(serializer.data)

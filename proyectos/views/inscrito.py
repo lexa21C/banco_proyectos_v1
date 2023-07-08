@@ -28,8 +28,6 @@ class InscritoViewSet(viewsets.ModelViewSet):
             if exists_active_inscrito:
                 return Response({'error': 'El perfil tiene un inscrito con estado activo'}, status=400)
 
-            # Verificar si el estado es inactivo
-            if estado != 'inactivo':
-                return Response({'error': 'El estado del inscrito debe ser inactivo'}, status=400)
+           
 
         return super().create(request, *args, **kwargs)

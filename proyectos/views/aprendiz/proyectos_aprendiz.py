@@ -7,10 +7,9 @@ from proyectos.models import Inscrito, Proyecto
 from proyectos.views.funciones import *
 from django.http import Http404
 
+from rest_framework.exceptions import NotFound
+
 class ProyectosAprendizViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
     queryset = Proyecto.objects.all()
     serializer_class = ProyectoSerializer
     # permission_classes = [permissions.IsAuthenticated]
@@ -28,19 +27,18 @@ class ProyectosAprendizViewSet(viewsets.ModelViewSet):
         Returns:
             Response: Una respuesta HTTP con los datos de los proyectos asociados al usuario.
         """
-        
         try:
             user_id = kwargs['user_id']
             perfil_id = perfil_conectado(user_id)
             inscrito = Inscrito.objects.filter(perfil_id=perfil_id)
             grupo_ids = inscrito.values_list('nombre_grupo', flat=True)
+            inscritos = Inscrito.objects.filter(nombre_grupo__id__in=grupo_ids)
+            integrante_ids = inscritos.values_list('id', flat=True)
+            proyectos = Proyecto.objects.filter(aprendiz__id__in=integrante_ids)
             
-            inscritos = Inscrito.objects.filter(nombre_grupo__id__in=grupo_ids)  # Filtra los inscritos por los IDs de los grupos
+            if not proyectos.exists():
+                raise NotFound("No se encontraron proyectos para este perfil.")
             
-            integrante_ids = inscritos.values_list('id', flat=True)  # Obtén los IDs de los inscritos filtrados
-        
-            proyectos = Proyecto.objects.filter(aprendiz__id__in=integrante_ids)  # Filtra los proyectos por los IDs de los inscritos filtrados
-        
             serializer = self.get_serializer(proyectos, many=True)
             return Response(serializer.data)
         except Http404:

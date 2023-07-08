@@ -24,6 +24,7 @@ from proyectos.views.aprendiz.proyectos_aprendiz import ProyectosAprendizViewSet
 from proyectos.views.aprendiz.grupos import UsuarioGruposViewSet
 #proyectos grupos
 from proyectos.views.grupos.agregar_integrantes import AgregarInscritosViewSet
+from proyectos.views.grupos.integrantes import IntegrantesViewSet
 #proyectos instructor
 from proyectos.views.instructor.calificar_proyecto import CalificaProyectoViewSet
 from proyectos.views.instructor.proyectos_instructor import ProyectosInstructorViewSet
@@ -31,7 +32,10 @@ from proyectos.views.instructor.proyectos_instructor import ProyectosInstructorV
 from proyectos.views.login import UserLoginAPIView
 from proyectos.views.signup import UserSignUpAPIView
 # Proyectos
-from proyectos.views.proyectos.
+from proyectos.views.proyectos.proyecto_entregas import ProyectoEntregasViewSet
+from proyectos.views.proyectos.participantes import ProyectoParticpantesViewSet
+from proyectos.views.proyectos.buscar_proyectos import BuscarProyectos
+
 
 
 urlpatterns = [
@@ -53,8 +57,8 @@ urlpatterns = [
     path('api/calificar-proyecto/<int:proyecto_id>/<str:estado>/', CalificaProyectoViewSet.as_view({'put': 'actualizar_proyecto'}), name='calificar_proyecto'),#terminado
     path('api/proyectos-instructor/<int:ficha_id>/', ProyectosInstructorViewSet.as_view({'get':'get_proyectos_instructor'}),name='proyectos_asociados_a_una_ficha '),
     # Proyecto
-    path('buscar_proyectos/', ProyectoList.as_view()),
-    path('api/proyecto-entregas/<int:id_proyecto>/', ProyectoEntregaViewSet.as_view({'get': 'get_entregas_por_proyecto'}), name='lista_entregas_por_proyecto'),#terminado
+    path('buscar_proyectos/', BuscarProyectos.as_view()),
+    path('api/proyecto-entregas/<int:id_proyecto>/', ProyectoEntregasViewSet.as_view({'get': 'get_entregas_por_proyecto'}), name='lista_entregas_por_proyecto'),#terminado
     path('api/proyecto-participantes/<int:proyecto_id>/', ProyectoParticpantesViewSet.as_view({'get':'get_participantes'}), name='participantes_del_proyecto'),#terminado
    
 
