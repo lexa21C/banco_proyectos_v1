@@ -200,7 +200,7 @@ class Entrega (models.Model):
     calificacion            = models.CharField(max_length=20, choices = CALIFICACION,default = 'en revision')
 
     descripcion_entrega     = models.CharField(max_length=5000 )    
-    documento       = models.FileField(upload_to = 'proyectos/documentos',)
+    documento       = models.FileField(upload_to = 'proyectos/documentos', null= True, blank= True)
     respuesta_instructor    = models.CharField(max_length=5000, null= True, blank= True)  
     # Estado_entrega          = models.CharField(max_length=5000 )   
     instructor              = models.CharField(max_length=300 ,null= True, blank= True) # solo va el nombre del instructor que hizo la revision     
@@ -208,7 +208,7 @@ class Entrega (models.Model):
     proyecto                = models.ForeignKey(Proyecto, on_delete = models.PROTECT )
     tipo_revision           = models.ForeignKey(Tipo_Revision, on_delete = models.PROTECT)
     # aprendiz                = models.ForeignKey(Inscrito, on_delete=models.CASCADE)
-    autor                   = models.CharField(max_length=300 ,null= True, blank= True)
+    autor                   = models.IntegerField(max_length=300 ,null= True, blank= True)
     creado                  = models.DateTimeField(auto_now_add = True)
     editado                 = models.DateTimeField(auto_now = True)
 
