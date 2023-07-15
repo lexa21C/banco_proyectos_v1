@@ -200,6 +200,7 @@ class Entrega (models.Model):
     calificacion            = models.CharField(max_length=20, choices = CALIFICACION,default = 'en revision')
 
     descripcion_entrega     = models.CharField(max_length=5000 )    
+    documento       = models.FileField(upload_to = 'proyectos/documentos',)
     respuesta_instructor    = models.CharField(max_length=5000, null= True, blank= True)  
     # Estado_entrega          = models.CharField(max_length=5000 )   
     instructor              = models.CharField(max_length=300 ,null= True, blank= True) # solo va el nombre del instructor que hizo la revision     
@@ -215,15 +216,7 @@ class Entrega (models.Model):
     def __str__(self):
         return self.calificacion + " " + str(self.creado) + " " + str(self.editado)
     
-class Documento (models.Model):
-    documento       = models.FileField(upload_to = 'proyectos/documentos',)
-    entrega         = models.ForeignKey(Entrega, on_delete=models.CASCADE)
-    
-    creado          = models.DateTimeField(auto_now_add = True)
-    editado         = models.DateTimeField(auto_now = True)
-    
-    def __str__(self):
-        return self.entrega.tipo_revision.nombre
+
 
 
 #modelo de AbtractUser

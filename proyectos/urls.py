@@ -15,7 +15,6 @@ from proyectos.views.proyecto import *
 
 from proyectos.views.entrega import *
 
-from proyectos.views.documento import *
 from proyectos.views.user import *
 from proyectos.views.grupo import *
 from proyectos.views.inscrito import *
@@ -39,7 +38,7 @@ router.register(r'proyecto', ProyectoViewSet)
 
 
 router.register(r'entrega', EntregaViewSet)
-router.register(r'documento', DocumentoViewSet)
+
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
