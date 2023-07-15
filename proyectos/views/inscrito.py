@@ -18,10 +18,7 @@ class InscritoViewSet(viewsets.ModelViewSet):
         estado = data.get('estado')
 
         if perfil_id and ficha_id:
-            # Verificar si el perfil ya está asociado a una ficha
-            exists_inscrito = Inscrito.objects.filter(perfil=perfil_id, ficha=ficha_id).exists()
-            if exists_inscrito:
-                return Response({'error': 'El perfil ya está asociado a esta ficha'}, status=400)
+            
 
             # Verificar si el perfil tiene un inscrito con estado activo
             exists_active_inscrito = Inscrito.objects.filter(perfil=perfil_id, estado='activo').exists()

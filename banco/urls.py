@@ -22,6 +22,8 @@ from  proyectos.views.fichas.integrantes import FichaIntegrantesViewSet
 #proyectos aprendiz
 from proyectos.views.aprendiz.proyectos_aprendiz import ProyectosAprendizViewSet
 from proyectos.views.aprendiz.grupos import UsuarioGruposViewSet
+from proyectos.views.aprendiz.grupo_proyecto import GrupoProyectosViewSet
+
 #proyectos grupos
 from proyectos.views.grupos.agregar_integrantes import AgregarInscritosViewSet
 from proyectos.views.grupos.integrantes import IntegrantesViewSet
@@ -50,6 +52,7 @@ urlpatterns = [
     #aprendiz
     path('api/proyectos-aprendiz/<int:user_id>/',ProyectosAprendizViewSet.as_view({'get':'get_proyectos_aprendiz'}), name='proyectos_asociados_a_un_aprendiz '),
     path('api/usuario-grupos/<int:user_id>/', UsuarioGruposViewSet.as_view({'get': 'get_mis_grupos'}), name='lista_de_grupos_de un_usuario'),
+    path('api/grupo-proyecto/<int:user_id>/', GrupoProyectosViewSet.as_view({'get': 'get_mis_grupos'}), name='grupo_asociado_al_proyecto'),
     #grupos
     path('api/agregar-integrantes/<int:id_user>/', AgregarInscritosViewSet.as_view({'get': 'get_inscritos'}), name='agregar_inscritos'),#terminado
     path('api/integrantes/<int:grupo_id>/', IntegrantesViewSet.as_view({'get': 'get_integrantes'}), name='get_fichas_usuario'),

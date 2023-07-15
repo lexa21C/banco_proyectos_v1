@@ -11,7 +11,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 #proyecto
 from proyectos.models import Inscrito, Ficha
-from proyectos.serializers.ficha import *
+from proyectos.serializers.lista_fichas import *
 from proyectos.views.funciones import *
 
 
