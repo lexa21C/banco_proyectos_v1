@@ -23,6 +23,7 @@ from  proyectos.views.fichas.integrantes import FichaIntegrantesViewSet
 from proyectos.views.aprendiz.proyectos_aprendiz import ProyectosAprendizViewSet
 from proyectos.views.aprendiz.grupos import UsuarioGruposViewSet
 from proyectos.views.aprendiz.grupo_proyecto import GrupoProyectosViewSet
+from proyectos.views.registrar import upload_file
 
 #proyectos grupos
 from proyectos.views.grupos.agregar_integrantes import AgregarInscritosViewSet
@@ -46,6 +47,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/login/', UserLoginAPIView.as_view(), name='login'),
     path('api/signup/', UserSignUpAPIView.as_view(), name='signup'),
+     path('api/upload/', upload_file, name='upload_file'),
     #fichas
     path('api/fichas-usuario/<int:user_id>/', FichasDeUsuarioViewSet.as_view({'get':'get_fichas'}),name='fichas_de_un_usuario'),
     path('api/fichas-integrantes/<int:ficha_id>/', FichaIntegrantesViewSet.as_view({'get':'get_ficha_inscritos'}),name='integrantes_inscritos_a_una_ficha '),

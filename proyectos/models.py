@@ -39,7 +39,12 @@ ESTADO_PROYECTO = (
     #
     # agragar otro estado
 )
-
+#inscrito
+ESTADO_GRUPO = (
+    ('activo','activo'),
+    ('inactivo','inactivo'),
+    ('abandono_grupo_proyecto','abandono_grupo_proyecto'),
+)
 
 class Regional (models.Model):
     nombre          =models.CharField(max_length=300, unique=True)
@@ -164,11 +169,11 @@ class Grupo (models.Model):
         return self.nombre_grupo
 
 class Inscrito (models.Model):
-    estado        = models.CharField(max_length=30)
-    nombre_grupo               = models.ForeignKey(Grupo, null=True, blank=True, on_delete = models.PROTECT )
-    
-    perfil          = models.ForeignKey(Perfil, on_delete = models.PROTECT)
-    ficha           = models.ForeignKey(Ficha, on_delete = models.PROTECT)
+    # estado del aprendiz respecto a la ficha
+    estado        = models.CharField(max_length=30,choices=ESTADO_GRUPO, default='activo')
+    nombre_grupo  = models.ForeignKey(Grupo, null=True, blank=True, on_delete = models.PROTECT )
+    perfil        = models.ForeignKey(Perfil, on_delete = models.PROTECT)
+    ficha         = models.ForeignKey(Ficha, on_delete = models.PROTECT)
     # proyecto        = models.IntegerField(null= True, blank= True) # consulta el id del Proyecto
     
     def __str__(self):
@@ -197,27 +202,22 @@ class Proyecto(models.Model):
 
 
 class Entrega (models.Model):
-    calificacion            = models.CharField(max_length=20, choices = CALIFICACION,default = 'en revision')
-
+    calificacion            = models.CharField(max_length=20, choices = CALIFICACION,null= True, blank= True)
     descripcion_entrega     = models.CharField(max_length=5000 )    
-    documento       = models.FileField(upload_to = 'proyectos/documentos', null= True, blank= True)
     respuesta_instructor    = models.CharField(max_length=5000, null= True, blank= True)  
     # Estado_entrega          = models.CharField(max_length=5000 )   
-    instructor              = models.CharField(max_length=300 ,null= True, blank= True) # solo va el nombre del instructor que hizo la revision     
-    
+    instructor              = models.CharField(max_length=300 ,null= True, blank= True) # solo va el nombre del instructor que hizo la revision      
     proyecto                = models.ForeignKey(Proyecto, on_delete = models.PROTECT )
     tipo_revision           = models.ForeignKey(Tipo_Revision, on_delete = models.PROTECT)
     # aprendiz                = models.ForeignKey(Inscrito, on_delete=models.CASCADE)
-    autor                   = models.IntegerField(max_length=300 ,null= True, blank= True)
+    autor                   = models.CharField(max_length=300 ,null= True, blank= True)
     creado                  = models.DateTimeField(auto_now_add = True)
     editado                 = models.DateTimeField(auto_now = True)
-
+    documento               = models.FileField(upload_to = 'entrega/documento',)
+    url                     = models.URLField(null= True, blank= True,)    
 
     def __str__(self):
         return self.calificacion + " " + str(self.creado) + " " + str(self.editado)
     
 
-
-
-#modelo de AbtractUser
 
