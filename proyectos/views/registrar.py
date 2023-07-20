@@ -40,13 +40,28 @@ def upload_file(request):
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
             print(user)
-            perfil_id = Perfil.objects.create()
-            # perrfil =            
-            
+            # perfil_id = Perfil.objects.create()
+                        
            # Convert the User object to a dictionary using UserModelSerializer
             user_data = UserModelSerializer(user).data
             print(user_data)
-           
+            print(type(user_data))
+
+
+            # per = Perfil() # instancia de un objeto perfil 
+            # # print("xxxxxxxxxxxxxxxx\n",per)            
+            # # per.usuario = user_data.id 
+
+            # # como sacar los valores de los atributos de user_data SERIALIZADO JSON 
+            # per.documento = user_data.docuemnto['docuemnto']       
+            # per.tipo_documento = user_data.tipo_documento      
+            # per.rol             = user_data.rol
+            # per.usuario         = user_data.usuario
+            # # x seria la instancia del objeto  per que es un objeto de Perfil  
+            # x = per.save(commit = False) # crearia el id del perfil
+            # x.save() # crearia el perfil asigna a la base de datos
+
+
             users.append(user_data)  # Append the serialized user data to the users list
 
         workbook.close()
