@@ -202,7 +202,7 @@ class Proyecto(models.Model):
 
 
 class Entrega (models.Model):
-    calificacion            = models.CharField(max_length=20, choices = CALIFICACION,null= True, blank= True)
+    calificacion            = models.CharField(max_length=20, choices = CALIFICACION, default = 'en revision')
     descripcion_entrega     = models.CharField(max_length=5000 )    
     respuesta_instructor    = models.CharField(max_length=5000, null= True, blank= True)  
     # Estado_entrega          = models.CharField(max_length=5000 )   
@@ -213,7 +213,7 @@ class Entrega (models.Model):
     autor                   = models.CharField(max_length=300 ,null= True, blank= True)
     creado                  = models.DateTimeField(auto_now_add = True)
     editado                 = models.DateTimeField(auto_now = True)
-    documento               = models.FileField(upload_to = 'entrega/documento',)
+    documento               = models.FileField(upload_to = 'entrega/documento',null=True, blank=True)
     url                     = models.URLField(null= True, blank= True,)    
 
     def __str__(self):

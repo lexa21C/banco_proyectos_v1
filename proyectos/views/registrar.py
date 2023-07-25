@@ -1,71 +1,107 @@
 from django.http import JsonResponse
 from proyectos.serializers.signup import UserSignUpSerializer
-from openpyxl import load_workbook
 from django.views.decorators.csrf import csrf_exempt
-from proyectos.serializers.user import UserModelSerializer  # Import the UserModelSerializer
+from proyectos.serializers.user import UserModelSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from proyectos.models import Perfil
+from proyectos.models import Perfil, Rol, Ficha, Inscrito
+from django.contrib.auth.models import User
+from openpyxl import load_workbook
+import json
 
+# Vista para subir un archivo y procesar los datos de usuarios en él
 @csrf_exempt
 def upload_file(request):
     if request.method == 'POST':
-        file = request.FILES['file']
+        # Obtener ficha_id, rol_id y el archivo del cuerpo de la solicitud POST
+        ficha_id = request.POST.get('ficha_id', None)
+        rol_id = request.POST.get('rol_id', None)
+        file = request.FILES.get('file', None)
+        print('rol', rol_id)
+
+        # Verificar que los datos requeridos están presentes en la solicitud
+        if not file or ficha_id is None or rol_id is None:
+            return JsonResponse({'error': 'Invalid request data'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Intentar obtener instancias de Rol y Ficha utilizando los IDs proporcionados
+            rol_instance = Rol.objects.get(id=rol_id)
+            ficha_instance = Ficha.objects.get(id=ficha_id)
+        except Rol.DoesNotExist:
+            return JsonResponse({'error': 'Invalid rol_id'}, status=status.HTTP_400_BAD_REQUEST)
+        except Ficha.DoesNotExist:
+            return JsonResponse({'error': 'Invalid ficha_id'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Cargar el archivo Excel utilizando la biblioteca openpyxl
         workbook = load_workbook(file)
         sheet = workbook.active
-        perfil ={
-            'documento':'',
-            'tipo_documento':'',
-            'rol':'',
-            'usuario':'',
-        }
-        inscrito = {
-            'perfil':'',
-            'ficha':'',
-        }
         users = []
-        
-        for row in sheet.iter_rows(values_only=True):
-            row_data = {
-                'username': row[0],
-                'email': row[1],
-                'first_name': row[2],
-                'last_name': row[3],
-                'password': row[4],
-                'password_confirmation': row[4]
-            }
-            
-            serializer = UserSignUpSerializer(data=row_data)
-            serializer.is_valid(raise_exception=True)
-            user = serializer.save()
-            print(user)
-            # perfil_id = Perfil.objects.create()
-                        
-           # Convert the User object to a dictionary using UserModelSerializer
-            user_data = UserModelSerializer(user).data
-            print(user_data)
-            print(type(user_data))
 
+        # Recorrer las filas del archivo Excel y procesar los datos de los usuarios
+        for index, row in enumerate(sheet.iter_rows(values_only=True), start=1):
+            try:
+                # Extraer los datos del usuario de la fila actual
+                row_data = {
+                    'username': row[0],
+                    'email': row[1],
+                    'first_name': row[2],
+                    'last_name': row[3],
+                    'password': row[4],
+                    'password_confirmation': row[4]  # Suponemos que se utiliza la misma contraseña para confirmación
+                }
 
-            # per = Perfil() # instancia de un objeto perfil 
-            # # print("xxxxxxxxxxxxxxxx\n",per)            
-            # # per.usuario = user_data.id 
+                # Imprimir los datos del usuario de la fila actual (opcional, solo para depuración)
+                print(f"Row {index} Data:", row_data)
 
-            # # como sacar los valores de los atributos de user_data SERIALIZADO JSON 
-            # per.documento = user_data.docuemnto['docuemnto']       
-            # per.tipo_documento = user_data.tipo_documento      
-            # per.rol             = user_data.rol
-            # per.usuario         = user_data.usuario
-            # # x seria la instancia del objeto  per que es un objeto de Perfil  
-            # x = per.save(commit = False) # crearia el id del perfil
-            # x.save() # crearia el perfil asigna a la base de datos
+                # Verificar que no haya valores vacíos o nulos en los datos del usuario
+                if any(value is None for value in row_data.values()):
+                    break  # Saltar a la siguiente fila si faltan datos
+                    # print(f"Skipping Row {row_data} - Incomplete data.")
 
+                # Validar los datos del usuario utilizando el serializador UserSignUpSerializer
+                serializer = UserSignUpSerializer(data=row_data)
+                serializer.is_valid(raise_exception=True)
+                user = serializer.save()
+                user_data = UserModelSerializer(user).data
+                user_id = user_data['id']
 
-            users.append(user_data)  # Append the serialized user data to the users list
+                try:
+                    # Intentar obtener la instancia del usuario recién creado
+                    user_instance = User.objects.get(id=user_id)
+                except User.DoesNotExist:
+                    return JsonResponse({'error': f'User with ID {user_id} not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Crear un perfil relacionado con el usuario y la ficha
+                per = Perfil()
+                per.documento = row[6]
+                per.rol = rol_instance
+                per.usuario = user_instance
+                per.tipo_documento = row[5]
+                per.save()
+
+                # Crear un registro de Inscrito relacionando el perfil con la ficha
+                inscrito = Inscrito()
+                inscrito.perfil = per
+                inscrito.ficha = ficha_instance
+                inscrito.save()
+
+                # Imprimir los datos de los registros creados (opcional, solo para depuración)
+                print(inscrito)
+                print(per)
+
+                # Agregar los datos del usuario al resultado final
+                users.append(user_data)
+
+            except StopIteration:
+                # Romper el bucle cuando no hay más filas en el archivo Excel
+                break
 
         workbook.close()
 
-        return JsonResponse(users, safe=False)  # Return the serialized users list as a JSON response
-    
+        # Devolver una respuesta JSON con los datos de los usuarios registrados
+        return JsonResponse(users, safe=False)
+
+    # Devolver una respuesta de error si el método de solicitud no es POST
     return JsonResponse({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+

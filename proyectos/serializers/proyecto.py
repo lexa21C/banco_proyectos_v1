@@ -8,6 +8,6 @@ class ProyectoSerializer(serializers.ModelSerializer):
     # aprendiz = InscritoSerializer()
     class Meta:
         model = Proyecto
-        fields = ['id','nombre_proyecto', 'descripcion','aprendiz','codigo_fuente', 'categorias', 'estado']
+        fields = ['id','nombre_proyecto', 'descripcion','aprendiz','codigo_fuente', 'categorias', 'estado','foto']
         
         #fields = ['url', 'id','nombre_proyecto']
