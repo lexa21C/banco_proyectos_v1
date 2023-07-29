@@ -183,7 +183,7 @@ class Proyecto(models.Model):
 
     nombre_proyecto     = models.CharField(max_length=300 )    
     descripcion         = models.CharField(max_length=5000 )    
-    foto                = models.ImageField(upload_to='proyectos/foto', null=True, blank=True)
+    foto                = models.ImageField(upload_to='proyectos/foto', null=True, blank=True, default='/staic/images/default.png')
     aprendiz                = models.ForeignKey(Inscrito, on_delete=models.CASCADE)
     codigo_fuente       = models.URLField(null= True, blank= True,)    
     categorias          = models.ManyToManyField(Categoria, null=True, blank=True)
